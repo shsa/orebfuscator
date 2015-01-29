@@ -1,42 +1,52 @@
 package Orebfuscator;
 
+import java.lang.reflect.Field;
+
 import net.minecraft.network.play.server.S26PacketMapChunkBulk;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
 public class MapChunkBulk 
 {
-	public int offsetLSB;
-	public int offsetMSB;
-	public int offsetMetadata;
-	public int offsetBlocklight;
-	public int len;
-	public int lenLSB;
-	public int lenMSB;
-	public int[] bufLSB;
-	public int[] bufMSB;
-	public byte[][] dataArray;
-	public byte[] data;
+    public static Field fieldChunkX;
+    public static Field fieldChunkZ;
 	
-	public MapChunkBulk(S26PacketMapChunkBulk packet, World world)
+	
+	// 1110011 - набор блоков (ExtendedBlockStorage.blockLSBArray) по высоте (1 - есть блок, 0 - нет блока)
+	public static Field fieldStatusLSB = null;
+	
+	// 0001110 - набор блоков (ExtendedBlockStorage.blockMSBArray) по высоте (1 - есть блок, 0 - нет блока)
+	public static Field fieldStatusMSB;
+	
+	// -- массив данных
+	public static Field fieldData;
+	
+	public static ChunkInfo info;
+	
+	public static void parse(World world, S26PacketMapChunkBulk packet)
 	{
-        int k = 0;
-        int l;
+		if (fieldStatusLSB == null)
+		{
+            fieldChunkX = Fields.getField(packet, "field_149266_a");
+            fieldChunkZ = Fields.getField(packet, "field_149264_b");
 
-        bufLSB = (int[]) Fields.getValue(packet, "field_149265_c"); // 1110011 - набор блоков (ExtendedBlockStorage.blockLSBArray) по высоте (1 - есть блок, 0 - нет блока)
-        bufMSB = (int[]) Fields.getValue(packet, "field_149262_d"); // 0001110 - набор блоков (ExtendedBlockStorage.blockMSBArray) по высоте (1 - есть блок, 0 - нет блока)
-        dataArray = (byte[][]) Fields.getValue(packet, "field_149260_f"); // -- массив данных
+			fieldStatusLSB = Fields.getField(packet, "field_149265_c");
+			fieldStatusMSB = Fields.getField(packet, "field_149262_d");
+			fieldData = Fields.getField(packet, "field_149260_f");
+			
+			info = new ChunkInfo();
+		}
+		
 
-        ChunkInfo info = new ChunkInfo();
-        
-        int lsb;
-        int msb;
-        int pos;
-        int len;
-        
-        for (int i = 0; i < bufLSB.length; i++)
+		int[] chunkX = (int[]) Fields.getValue(packet, fieldChunkX);
+		int[] chunkZ = (int[]) Fields.getValue(packet, fieldChunkZ);
+        int[] statusLSB = (int[]) Fields.getValue(packet, fieldStatusLSB);
+        int[] statusMSB = (int[]) Fields.getValue(packet, fieldStatusMSB);
+        byte[][] dataArray = (byte[][]) Fields.getValue(packet, fieldData);
+
+        for (int i = 0; i < statusLSB.length; i++)
         {
-        	info.parse(world, dataArray[i], bufLSB[i], bufMSB[i]);
+        	info.parse(world, chunkX[i], chunkZ[i], statusLSB[i], statusMSB[i], dataArray[i]);
         }
 	}
 }

@@ -39,6 +39,28 @@ public class Fields
 		return null;
 	}
 	
+	public static Object getValue(Object instance, Field field)
+	{
+		try {
+			return field.get(instance);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static Field getField(Object instance, String name)
+	{
+		try {
+			Field field = instance.getClass().getDeclaredField(name);
+            field.setAccessible(true);
+			return field;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public static void setValue(Object instance, int index, Object value)
 	{
 		try {

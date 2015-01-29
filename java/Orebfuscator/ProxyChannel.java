@@ -3,6 +3,7 @@ package Orebfuscator;
 import java.net.SocketAddress;
 
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.play.server.S23PacketBlockChange;
 import net.minecraft.network.play.server.S26PacketMapChunkBulk;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.Channel;
@@ -32,11 +33,21 @@ public class ProxyChannel implements Channel
 		if (msg instanceof S26PacketMapChunkBulk) 
 		{
 			S26PacketMapChunkBulk packet = (S26PacketMapChunkBulk)msg;
-			MapChunkBulk chunk = new MapChunkBulk(packet, player.worldObj);
-			
-			//Log.msg("%d", field_149260_f[0].length);
+			MapChunkBulk.parse(player.worldObj, packet);
+			return;
+		}
+		if (msg instanceof MyPacketBlockChange)
+		{
+			return;
+		}
+		if (msg instanceof S23PacketBlockChange)
+		{
+			S23PacketBlockChange packet = (S23PacketBlockChange)msg;
+			BlockChange.parse(player.worldObj, channel, packet);
+			return;
 		}
 		
+		//world.scheduleBlockUpdate(x, y, z, this, tickRate);
 		//Log.msg("%s", msg.getClass().getName());
 	}
 	
