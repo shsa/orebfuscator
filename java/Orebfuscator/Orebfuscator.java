@@ -1,10 +1,12 @@
 package Orebfuscator;
 
+import java.io.File;
 import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -31,6 +33,8 @@ public class Orebfuscator
     public void preInit(FMLPreInitializationEvent event)
     {
     	FMLCommonHandler.instance().bus().register(this);
+    	
+    	Options.load(event.getModConfigurationDirectory());
     }
     
     @SubscribeEvent
@@ -53,37 +57,4 @@ public class Orebfuscator
     	PlayerInjector.hookPlayer(handler.playerEntity, handler.netManager);
     	*/
     }
-    
-	private static HashSet<Integer> forcedTransparentBlocks = new HashSet<Integer>();
-	private static boolean[] TransparentBlocks = new boolean[4096];
-	private static boolean TransparentCached = false;
-	public static boolean isBlockTransparent(int id) 
-	{
-		if (id < 0)
-			return true;
-		if (!TransparentCached) 
-		{
-			// Generate TransparentBlocks by reading them from Minecraft
-			for (int i = 0; i < TransparentBlocks.length; i++) {
-				if (forcedTransparentBlocks.contains(i)) 
-				{
-					TransparentBlocks[i] = true;
-				}
-				else
-				{
-					Block block = Block.getBlockById(i);
-					if (block == null)
-					{
-						TransparentBlocks[i] = true;
-					}
-					else
-					{
-						TransparentBlocks[i] = !block.isNormalCube();
-					}
-				}
-			}
-			TransparentCached = true;
-		}
-		return TransparentBlocks[id];
-	}
 }

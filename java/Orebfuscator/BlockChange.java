@@ -22,7 +22,7 @@ public class BlockChange
 	public static int baseY;
 	public static int baseZ;
 	
-	public static byte offset = 2;
+	public static int updateRadius = 2;
 	public static int startPos;
 	
 	public static void parse(World world, Channel channel, S23PacketBlockChange packet)
@@ -40,18 +40,18 @@ public class BlockChange
 		
 		// используем базовую точку, чтобы в дальнейшем высчитывать смещения обновляемых блоков
 		// смещения будем сводить в один int и хранить в HashSet
-		baseX = x - offset;
-		baseY = y - offset;
-		baseZ = z - offset;
+		baseX = x - updateRadius;
+		baseY = y - updateRadius;
+		baseZ = z - updateRadius;
 		
-		x = offset;
-		y = offset;
-		z = offset;
+		x = updateRadius;
+		y = updateRadius;
+		z = updateRadius;
 		
-		startPos = (offset << 16) | (offset << 8) | offset;
+		startPos = (updateRadius << 16) | (updateRadius << 8) | updateRadius;
 		
 		list.clear();
-		updateAjacentBlocks(world, offset, offset, offset, offset + 1);
+		updateAjacentBlocks(world, updateRadius, updateRadius, updateRadius, updateRadius + 1);
 		for (int pos : list)
 		{
 			x = baseX + (pos >> 16 & 255);
@@ -69,7 +69,7 @@ public class BlockChange
 			return false;
 		
 		Block block = world.getBlock(baseX + x, baseY + y, baseZ + z);
-		return Orebfuscator.isBlockTransparent(Block.getIdFromBlock(block));
+		return Options.isBlockTransparent(Block.getIdFromBlock(block));
 	}
 	
 	public static boolean needUpdate(World world, int x, int y, int z)

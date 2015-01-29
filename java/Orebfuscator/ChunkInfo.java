@@ -26,8 +26,8 @@ public class ChunkInfo
 	// NibbleArray ExtendedBlockStorage.blockMSBArray
 	public int[] offsetsMSB = new int[16];
 
-	public int chunkX;
-	public int chunkZ;
+	public int startX;
+	public int startY;
 	
 	// Максимальный индекс+1 секции
 	public int len;
@@ -35,8 +35,8 @@ public class ChunkInfo
 	
 	public void parse(World world, int chunkX, int chunkZ, int sectionLSB, int sectionMSB, byte[] data)
 	{
-		this.chunkX = chunkX;
-		this.chunkZ = chunkZ;
+		this.startX = chunkX << 4;
+		this.startY = chunkZ << 4;
 		
 		this.data = data;
     	int countLSB = 0;
@@ -104,23 +104,16 @@ public class ChunkInfo
         {
             if (offsetsLSB[i] > -1)
             {
+            	l = i << 4;
             	for (int x = 0; x < 16; x++)
             	{
             		for (int y = 0; y < 16; y++)
             		{
             			for (int z = 0; z < 16; z++)
             			{
-            				/*
-            				if ((x > 0 && x < 16) && (y == 0 || y == 15) && (z == 0 || z == 15))
-            					setBlockID(x, y, z, 1);
-            				if ((x == 0 || x == 15) && (y > 0 || y < 16) && (z == 0 || z == 15))
-            					setBlockID(x, y, z, 1);
-            				if ((x == 0 || x == 15) && (y == 0 || y == 15) && (z > 0 || z < 16))
-            					setBlockID(x, y, z, 1);
-            				*/
-            				if (neetObfuscate(world, x, i << 4 | y, z))
+            				if (neetObfuscate(world, x, l | y, z))
             				{
-            					setBlockID(x, i << 4 | y, z, 57);
+            					setBlockID(x, l | y, z, Options.getRandomBlock());
             				}
             			}
             		}
@@ -187,19 +180,23 @@ public class ChunkInfo
 		
 		if (x < 0 || x > 15 || z < 0 || z > 15)
 		{
-			/*
-			Block block = world.getBlock((this.chunkX << 4) | x, y, (this.chunkZ << 4) | z);
-			return Orebfuscator.isBlockTransparent(Block.getIdFromBlock(block));
-			*/
+			if (Options.engineMode == 2)
+			{
+				Block block = world.getBlock(this.startX | x, y, this.startY | z);
+				return Options.isBlockTransparent(Block.getIdFromBlock(block));
+			}
 			return true;
 		}
 			
 			
-		return Orebfuscator.isBlockTransparent(getBlockID(world, x, y, z));
+		return Options.isBlockTransparent(getBlockID(world, x, y, z));
 	}
 	
 	public boolean neetObfuscate(World world, int x, int y, int z)
 	{
+		if (y > Options.maxObfuscateHeight)
+			return false;
+		
 		if (isTransparent(world, x, y, z))
 		{
 			return false;

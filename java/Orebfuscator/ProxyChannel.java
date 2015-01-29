@@ -36,10 +36,6 @@ public class ProxyChannel implements Channel
 			MapChunkBulk.parse(player.worldObj, packet);
 			return;
 		}
-		if (msg instanceof MyPacketBlockChange)
-		{
-			return;
-		}
 		if (msg instanceof S23PacketBlockChange)
 		{
 			S23PacketBlockChange packet = (S23PacketBlockChange)msg;
