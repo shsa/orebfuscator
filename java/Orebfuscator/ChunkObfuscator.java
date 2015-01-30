@@ -1,12 +1,11 @@
 package Orebfuscator;
 
 import Orebfuscator.Options.WorldOptions;
-import net.minecraft.block.Block;
 import net.minecraft.network.play.server.S26PacketMapChunkBulk;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
-public class ChunkInfo 
+public class ChunkObfuscator 
 {
 	// информация о наличии секции. Секции - это блоки размером 16х16х16, секции располагаются друг над другом
 	// Chunk состоит из 16 секций, размер чанка 16x16x256
@@ -34,7 +33,7 @@ public class ChunkInfo
 	public int len;
 	public byte[] data;
 	
-	public void parse(World world, int chunkX, int chunkZ, int sectionLSB, int sectionMSB, byte[] data)
+	public void obfuscate(World world, int chunkX, int chunkZ, int sectionLSB, int sectionMSB, byte[] data)
 	{
 		this.startX = chunkX << 4;
 		this.startY = chunkZ << 4;
@@ -182,14 +181,8 @@ public class ChunkInfo
 		
 		if (x < 0 || x > 15 || z < 0 || z > 15)
 		{
-			//if (Options.engineMode == 2)
-			{
-				Block block = world.getBlock(this.startX | x, y, this.startY | z);
-				return Options.isBlockTransparent(Block.getIdFromBlock(block));
-			}
-			//return true;
+			return Options.isBlockTransparent(BlockHelper.getBlockID(world, this.startX | x, y, this.startY | z));
 		}
-			
 			
 		return Options.isBlockTransparent(getBlockID(world, x, y, z));
 	}

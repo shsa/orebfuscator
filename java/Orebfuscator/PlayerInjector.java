@@ -14,21 +14,8 @@ import net.minecraft.network.Packet;
 
 public class PlayerInjector {
 
-	@SuppressWarnings("unchecked")
 	public static void hookPlayer(EntityPlayerMP player) 
 	{
-		/*
-		NetworkManager nm = player.playerNetServerHandler.netManager;
-		Queue queue = (Queue)Fields.getValue(nm, Fields.NetworkManager.getReceivedPacketsQueueIndex());
-		queue = new AsyncPacketQueue(player, queue);
-		Fields.setValue(nm, Fields.NetworkManager.getReceivedPacketsQueueIndex(), queue);
-		*/
-		/*
-		Queue queue = (Queue)Fields.getValue(nm, Fields.NetworkManager.getOutboundPacketsQueueIndex());
-		queue = new AsyncPacketQueue(player, queue);
-		Fields.setValue(nm, Fields.NetworkManager.getOutboundPacketsQueueIndex(), queue);
-		*/
-		
 		NetworkManager nm = player.playerNetServerHandler.netManager;
 		Channel channel = (Channel)Fields.getValue(nm, Fields.NetworkManager.getChannelIndex());
 		channel = new ProxyChannel(channel, player);
@@ -37,13 +24,5 @@ public class PlayerInjector {
 
 	public static void cleanupPlayer(EntityPlayerMP player) 
 	{
-		/*
-		NetworkManager nm = player.playerNetServerHandler.netManager;
-		((AsyncPacketQueue)Fields.getValue(nm, Fields.NetworkManager.getReceivedPacketsQueueIndex())).cleanup();
-		*/
-		/*
-		NetworkManager nm = player.playerNetServerHandler.netManager;
-		((AsyncPacketQueue)Fields.getValue(nm, Fields.NetworkManager.getOutboundPacketsQueueIndex())).cleanup();
-		*/
 	}
 }

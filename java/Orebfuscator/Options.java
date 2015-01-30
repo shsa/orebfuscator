@@ -55,9 +55,6 @@ public class Options
 		    			getID(Blocks.diamond_ore),
 		    			getID(Blocks.redstone_ore),
 		    			getID(Blocks.emerald_ore),
-		    			getID(Blocks.end_portal_frame),
-		    			getID(Blocks.end_portal),
-		    			getID(Blocks.mob_spawner),
 		    			getID(Blocks.mossy_cobblestone),
 		    	}).getIntList();
 				if (options.randomBlocks.length == 0)
@@ -73,7 +70,6 @@ public class Options
 		    			getID(Blocks.nether_brick_stairs),
 		    			getID(Blocks.nether_wart),
 		    			getID(Blocks.quartz_ore),
-		    			getID(Blocks.mob_spawner),
 		    	}).getIntList();
 				if (options.randomBlocks.length == 0)
 					options.randomBlocks = new int[] {getID(Blocks.nether_brick)};
@@ -82,8 +78,6 @@ public class Options
 	    	if (provider instanceof WorldProviderEnd)
 	    	{
 				options.randomBlocks = config.get(name, "randomBlocks", new int[] {
-		    			getID(Blocks.end_portal_frame),
-		    			getID(Blocks.end_portal),
 		    			getID(Blocks.end_stone),
 		    	}).getIntList();
 				if (options.randomBlocks.length == 0)
@@ -122,8 +116,6 @@ public class Options
 	
 	public static WorldOptions worldOptions;
 	
-	public static int engineMode = 2;
-	
 	private static boolean[] obfuscateBlocks = new boolean[4096];
 	
 	public static int[] randomBlocks;
@@ -137,10 +129,6 @@ public class Options
     	configFile = new File(modDir, Orebfuscator.MODID + ".cfg");
     	Configuration config = new Configuration(configFile, false);
     	
-		//engineMode = clamp(config.get("Options", "engineMode", engineMode).getInt(), 1, 2);
-
-		//BlockChange.updateRadius = clamp(config.get("Options", "updateRadius", BlockChange.updateRadius).getInt(), 1, 5);
-		
 		int[] list = config.get("Options", "obfuscateBlocks", new int[] {
     			getID(Blocks.stone),
     			getID(Blocks.dirt),
@@ -242,5 +230,10 @@ public class Options
 			TransparentCached = true;
 		}
 		return _transparentBlocks[id];
+	}
+	
+	public static boolean isTransparent(Block block)
+	{
+		return isBlockTransparent(Block.getIdFromBlock(block));
 	}
 }

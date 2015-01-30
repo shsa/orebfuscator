@@ -33,20 +33,9 @@ public class ProxyChannel implements Channel
 		if (msg instanceof S26PacketMapChunkBulk) 
 		{
 			S26PacketMapChunkBulk packet = (S26PacketMapChunkBulk)msg;
-			MapChunkBulk.parse(player.worldObj, packet);
+			MapChunkBulkObfuscator.obfuscate(player.worldObj, packet);
 			return;
 		}
-		/*
-		if (msg instanceof S23PacketBlockChange)
-		{
-			S23PacketBlockChange packet = (S23PacketBlockChange)msg;
-			BlockChange.parse(player.worldObj, channel, packet);
-			return;
-		}
-		*/
-		//String className = msg.getClass().getSimpleName();
-		//if (className.indexOf("Entity") == -1)
-			//Log.msg("%s", msg.getClass().getName());
 	}
 	
 	@Override
@@ -126,7 +115,7 @@ public class ProxyChannel implements Channel
 
 	@Override
 	public ChannelFuture writeAndFlush(Object msg, ChannelPromise promise) {
-		this.updateMsg(msg);
+		//this.updateMsg(msg);
 		return this.channel.writeAndFlush(msg, promise);
 	}
 

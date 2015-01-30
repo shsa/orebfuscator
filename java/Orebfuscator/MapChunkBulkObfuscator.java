@@ -6,7 +6,7 @@ import net.minecraft.network.play.server.S26PacketMapChunkBulk;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 
-public class MapChunkBulk 
+public class MapChunkBulkObfuscator 
 {
     public static Field fieldChunkX;
     public static Field fieldChunkZ;
@@ -21,9 +21,9 @@ public class MapChunkBulk
 	// -- массив данных
 	public static Field fieldData;
 	
-	public static ChunkInfo info;
+	public static ChunkObfuscator info;
 	
-	public static void parse(World world, S26PacketMapChunkBulk packet)
+	public static void obfuscate(World world, S26PacketMapChunkBulk packet)
 	{
 		if (fieldStatusLSB == null)
 		{
@@ -34,7 +34,7 @@ public class MapChunkBulk
 			fieldStatusMSB = Fields.getField(packet, "field_149262_d");
 			fieldData = Fields.getField(packet, "field_149260_f");
 			
-			info = new ChunkInfo();
+			info = new ChunkObfuscator();
 		}
 		
 
@@ -46,7 +46,7 @@ public class MapChunkBulk
 
         for (int i = 0; i < statusLSB.length; i++)
         {
-        	info.parse(world, chunkX[i], chunkZ[i], statusLSB[i], statusMSB[i], dataArray[i]);
+        	info.obfuscate(world, chunkX[i], chunkZ[i], statusLSB[i], statusMSB[i], dataArray[i]);
         }
 	}
 }
