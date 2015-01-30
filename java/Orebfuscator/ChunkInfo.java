@@ -1,5 +1,6 @@
 package Orebfuscator;
 
+import Orebfuscator.Options.WorldOptions;
 import net.minecraft.block.Block;
 import net.minecraft.network.play.server.S26PacketMapChunkBulk;
 import net.minecraft.world.World;
@@ -100,6 +101,7 @@ public class ChunkInfo
             }
         }
         
+        Options.worldOptions = Options.getWorldOptions(world.provider);
         for (i = 0; i < len; i++)
         {
             if (offsetsLSB[i] > -1)
@@ -113,7 +115,7 @@ public class ChunkInfo
             			{
             				if (neetObfuscate(world, x, l | y, z))
             				{
-            					setBlockID(x, l | y, z, Options.getRandomBlock());
+            					setBlockID(x, l | y, z, Options.worldOptions.getRandomBlock());
             				}
             			}
             		}
@@ -180,12 +182,12 @@ public class ChunkInfo
 		
 		if (x < 0 || x > 15 || z < 0 || z > 15)
 		{
-			if (Options.engineMode == 2)
+			//if (Options.engineMode == 2)
 			{
 				Block block = world.getBlock(this.startX | x, y, this.startY | z);
 				return Options.isBlockTransparent(Block.getIdFromBlock(block));
 			}
-			return true;
+			//return true;
 		}
 			
 			
@@ -194,10 +196,10 @@ public class ChunkInfo
 	
 	public boolean neetObfuscate(World world, int x, int y, int z)
 	{
-		if (y > Options.maxObfuscateHeight)
+		if (y > Options.worldOptions.maxObfuscateHeight)
 			return false;
 		
-		if (isTransparent(world, x, y, z))
+		if (!Options.isObfuscated(getBlockID(world, x, y, z)))
 		{
 			return false;
 		}

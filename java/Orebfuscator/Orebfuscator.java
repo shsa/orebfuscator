@@ -6,6 +6,7 @@ import java.util.HashSet;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
@@ -33,6 +34,7 @@ public class Orebfuscator
     public void preInit(FMLPreInitializationEvent event)
     {
     	FMLCommonHandler.instance().bus().register(this);
+    	MinecraftForge.EVENT_BUS.register(new PlayerHandler());
     	
     	Options.load(event.getModConfigurationDirectory());
     }
