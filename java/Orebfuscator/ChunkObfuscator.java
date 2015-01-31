@@ -1,6 +1,7 @@
 package Orebfuscator;
 
 import Orebfuscator.Options.WorldOptions;
+import net.minecraft.block.Block;
 import net.minecraft.network.play.server.S26PacketMapChunkBulk;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -27,7 +28,7 @@ public class ChunkObfuscator
 	public int[] offsetsMSB = new int[16];
 
 	public int startX;
-	public int startY;
+	public int startZ;
 	
 	// Максимальный индекс+1 секции
 	public int len;
@@ -36,7 +37,7 @@ public class ChunkObfuscator
 	public void obfuscate(World world, int chunkX, int chunkZ, int sectionLSB, int sectionMSB, byte[] data)
 	{
 		this.startX = chunkX << 4;
-		this.startY = chunkZ << 4;
+		this.startZ = chunkZ << 4;
 		
 		this.data = data;
     	int countLSB = 0;
@@ -100,7 +101,7 @@ public class ChunkObfuscator
             }
         }
         
-        Options.worldOptions = Options.getWorldOptions(world.provider);
+        Options.worldOptions = Options.getWorldOptions(world);
         for (i = 0; i < len; i++)
         {
             if (offsetsLSB[i] > -1)
@@ -114,7 +115,7 @@ public class ChunkObfuscator
             			{
             				if (neetObfuscate(world, x, l | y, z))
             				{
-            					setBlockID(x, l | y, z, Options.worldOptions.getRandomBlock());
+            					setBlockID(x, l | y, z, Options.worldOptions.getRandomID());
             				}
             			}
             		}
@@ -181,7 +182,7 @@ public class ChunkObfuscator
 		
 		if (x < 0 || x > 15 || z < 0 || z > 15)
 		{
-			return Options.isBlockTransparent(BlockHelper.getBlockID(world, this.startX | x, y, this.startY | z));
+			return Options.isBlockTransparent(BlockHelper.getBlockID(world, this.startX + x, y, this.startZ + z));
 		}
 			
 		return Options.isBlockTransparent(getBlockID(world, x, y, z));

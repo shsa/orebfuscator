@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import Orebfuscator.Options.WorldOptions;
 import net.minecraft.block.Block;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
@@ -62,16 +63,19 @@ public class PlayerHandler
 			return this.isTransparent[2 + x - this.x][2 + y - this.y][2 + z - this.z];
 		}
 
-		public void updateBlock(World world, int x, int y, int z)
+		public void updateBlock(WorldOptions options, int x, int y, int z)
 		{
-			if (Options.isObfuscated(BlockHelper.getBlockID(world, x, y, z)))
+			if (isTransparent(options.worldObj, x, y, z))
+				return;
+			
+			if (options.isRandomBlock(BlockHelper.getBlockID(options.worldObj, x, y, z)))
 			{
-				if (isTransparent(world, x - 1, y, z) || isTransparent(world, x + 1, y, z) || 
-					isTransparent(world, x, y - 1, z) || isTransparent(world, x, y + 1, z) ||
-					isTransparent(world, x, y, z - 1) || isTransparent(world, x, y, z + 1))
+				if (isTransparent(options.worldObj, x - 1, y, z) || isTransparent(options.worldObj, x + 1, y, z) || 
+					isTransparent(options.worldObj, x, y - 1, z) || isTransparent(options.worldObj, x, y + 1, z) ||
+					isTransparent(options.worldObj, x, y, z - 1) || isTransparent(options.worldObj, x, y, z + 1))
 					return;
 				
-				world.markBlockForUpdate(x, y, z);
+				options.worldObj.markBlockForUpdate(x, y, z);
 			}
 		}
 	}
@@ -87,14 +91,15 @@ public class PlayerHandler
 
     	if (info.x != x || info.y != y || info.z != z)
     	{
+    		WorldOptions options = Options.getWorldOptions(player.worldObj);
     		info.updateBlocksTransparent(player.worldObj, x, y, z);
 			
-			info.updateBlock(player.worldObj, x-1, y, z);
-			info.updateBlock(player.worldObj, x+1, y, z);
-			info.updateBlock(player.worldObj, x, y-1, z);
-			info.updateBlock(player.worldObj, x, y+1, z);
-			info.updateBlock(player.worldObj, x, y, z-1);
-			info.updateBlock(player.worldObj, x, y, z+1);
+			info.updateBlock(options, x-1, y, z);
+			info.updateBlock(options, x+1, y, z);
+			info.updateBlock(options, x, y-1, z);
+			info.updateBlock(options, x, y+1, z);
+			info.updateBlock(options, x, y, z-1);
+			info.updateBlock(options, x, y, z+1);
     	}
 	}
 	
