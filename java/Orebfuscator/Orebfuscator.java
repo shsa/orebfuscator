@@ -23,7 +23,7 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 public class Orebfuscator
 {
     public static final String MODID = "Orebfuscator";
-    public static final String VERSION = "0.2";
+    public static final String VERSION = "0.3";
 
     @EventHandler
     public void init(FMLInitializationEvent event)

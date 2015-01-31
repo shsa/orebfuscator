@@ -1,6 +1,7 @@
 package Orebfuscator;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -23,16 +24,10 @@ public class Options
 		public WorldOptions(World world)
 		{
 			this.worldObj = world;
-			this.name = world.getProviderName();
+			this.name = getWorldName(world);
 		}
 		
 		public int maxObfuscateHeight = 128;
-		
-		private boolean[] isRandomBlock = new boolean[4096];
-		public boolean isRandomBlock(int blockID)
-		{
-			return this.isRandomBlock[blockID];
-		}
 		
 		private int[] rndBlocks;
 		private int[] rndBlocksInterval;
@@ -61,7 +56,7 @@ public class Options
 		
 		public void load(final Configuration config, final String[] blockList)
 		{
-			this.maxObfuscateHeight = clamp(config.get(name, "maxObfuscateHeight", this.maxObfuscateHeight).getInt(), 0, 256);
+			this.maxObfuscateHeight = config.getInt("maxObfuscateHeight", name, this.maxObfuscateHeight, 0, 256, "Max obfuscate height");
 	    	
 			String[] list = config.getStringList("randomBlocks", this.name, blockList, "[blockID]:[interval]");
 			int count = validateBlockList(list);
@@ -75,7 +70,7 @@ public class Options
 				list = blockList;
 				count = list.length;
 			}
-			
+
 			rndBlocks = new int[count];
 			rndBlocksInterval = new int[count];
 			rndBlocksCount = new int[count];
@@ -120,10 +115,15 @@ public class Options
 		}
 	}
 
+	public static String getWorldName(World world)
+	{
+		return world.provider.getClass().getSimpleName();
+	}
+	
 	private static HashMap<String, WorldOptions> worlds = new HashMap<String, WorldOptions>();
 	public static WorldOptions getWorldOptions(World world)
 	{
-		String name = world.getProviderName(); 
+		String name = getWorldName(world); 
 		WorldOptions options = worlds.get(name);
 		if (options == null)
 		{
@@ -189,9 +189,16 @@ public class Options
 	
 	private static boolean[] obfuscateBlocks = new boolean[4096];
 	
-	public static int[] randomBlocks;
-	
 	public static boolean[] transparentBlocks = new boolean[4096];
+	
+	public static class Offset
+	{
+		public int x;
+		public int y;
+		public int z;
+	}
+	
+	public static ArrayList<Offset> updateOffsets = new ArrayList<Offset>();
 	
 	public static File configFile;
 	
@@ -199,6 +206,28 @@ public class Options
 	{
     	configFile = new File(modDir, Orebfuscator.MODID + ".cfg");
     	Configuration config = new Configuration(configFile, false);
+    	
+    	int updateRadius = config.getInt("updateRadius", "Options", 2, 1, 5, "How much blocks update after block break");
+    	for (int x = -updateRadius; x <= updateRadius; x++)
+    	{
+    		for (int y = -updateRadius; y <= updateRadius; y++)
+    		{
+    			for (int z = -updateRadius; z <= updateRadius; z++)
+    			{
+    				if (x == 0 && y == 0 && z == 0)
+    					continue;
+    				
+    				if ((x*x + y*y + z*z) <= updateRadius*2)
+    				{
+    					Offset offset = new Offset();
+    					offset.x = x;
+    					offset.y = y;
+    					offset.z = z;
+    					updateOffsets.add(offset);
+    				}
+    			}
+    		}
+    	}
     	
 		int[] list = config.get("Options", "obfuscateBlocks", new int[] {
     			getID(Blocks.stone),
@@ -256,16 +285,6 @@ public class Options
 	private static String getID(Block block, int interval)
 	{
 		return String.format("%d:%d", Block.getIdFromBlock(block), interval);
-	}
-	
-	private static int clamp(int value, int min, int max) {
-		if (value < min) {
-			value = min;
-		}
-		if (value > max) {
-			value = max;
-		}
-		return value;
 	}
 	
 	public static boolean isObfuscated(int id) {

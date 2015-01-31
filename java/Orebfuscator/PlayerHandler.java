@@ -24,62 +24,39 @@ public class PlayerHandler
 	
 	public static class BlockBreakInfo
 	{
-		public boolean[][][] isTransparent = new boolean[5][5][5];
-		
 		public int x;
 		public int y;
 		public int z;
 		
-		public void updateBlocksTransparent(World world, int x, int y, int z)
+		public void update(final int x, final int y, final int z)
 		{
 			this.x = x;
 			this.y = y;
 			this.z = z;
-			
-			for (short i = -1; i < 2; i++)
-			{
-				for (short j = -1; j < 2; j++)
-				{
-					for (short k = -1; k < 2; k++)
-					{
-						this.isTransparent[2 + i][2 + j][2 + k] = Options.isBlockTransparent(BlockHelper.getBlockID(world, x + i, y + j, z + k));
-					}
-				}
-			}
-			this.isTransparent[0][2][2] = Options.isBlockTransparent(BlockHelper.getBlockID(world, x - 2, y, z));
-			this.isTransparent[4][2][2] = Options.isBlockTransparent(BlockHelper.getBlockID(world, x + 2, y, z));
-
-			this.isTransparent[2][0][2] = Options.isBlockTransparent(BlockHelper.getBlockID(world, x, y - 2, z));
-			this.isTransparent[2][4][2] = Options.isBlockTransparent(BlockHelper.getBlockID(world, x, y + 2, z));
-
-			this.isTransparent[2][2][0] = Options.isBlockTransparent(BlockHelper.getBlockID(world, x, y, z - 2));
-			this.isTransparent[2][2][4] = Options.isBlockTransparent(BlockHelper.getBlockID(world, x, y, z + 2));
-			
-			this.isTransparent[2][2][2] = false;
-		}
-		
-		public boolean isTransparent(final World world, final int x, final int y, final int z)
-		{
-			return this.isTransparent[2 + x - this.x][2 + y - this.y][2 + z - this.z];
-		}
-
-		public void updateBlock(WorldOptions options, int x, int y, int z)
-		{
-			if (isTransparent(options.worldObj, x, y, z))
-				return;
-			
-			if (options.isRandomBlock(BlockHelper.getBlockID(options.worldObj, x, y, z)))
-			{
-				if (isTransparent(options.worldObj, x - 1, y, z) || isTransparent(options.worldObj, x + 1, y, z) || 
-					isTransparent(options.worldObj, x, y - 1, z) || isTransparent(options.worldObj, x, y + 1, z) ||
-					isTransparent(options.worldObj, x, y, z - 1) || isTransparent(options.worldObj, x, y, z + 1))
-					return;
-				
-				options.worldObj.markBlockForUpdate(x, y, z);
-			}
 		}
 	}
 	
+	public boolean isTransparent(final World world, final int x, final int y, final int z)
+	{
+		return Options.isBlockTransparent(BlockHelper.getBlockID(world, x, y, z));
+	}
+
+	public void updateBlock(final World world, final int x, final int y, final int z)
+	{
+		if (isTransparent(world, x, y, z))
+			return;
+		
+		if (Options.isObfuscated(BlockHelper.getBlockID(world, x, y, z)))
+		{
+			if (isTransparent(world, x - 1, y, z) || isTransparent(world, x + 1, y, z) || 
+				isTransparent(world, x, y - 1, z) || isTransparent(world, x, y + 1, z) ||
+				isTransparent(world, x, y, z - 1) || isTransparent(world, x, y, z + 1))
+				return;
+			
+			world.markBlockForUpdate(x, y, z);
+		}
+	}
+
 	public void update(EntityPlayer player, int x, int y, int z)
 	{
     	BlockBreakInfo info = list.get(player);
@@ -91,15 +68,13 @@ public class PlayerHandler
 
     	if (info.x != x || info.y != y || info.z != z)
     	{
-    		WorldOptions options = Options.getWorldOptions(player.worldObj);
-    		info.updateBlocksTransparent(player.worldObj, x, y, z);
-			
-			info.updateBlock(options, x-1, y, z);
-			info.updateBlock(options, x+1, y, z);
-			info.updateBlock(options, x, y-1, z);
-			info.updateBlock(options, x, y+1, z);
-			info.updateBlock(options, x, y, z-1);
-			info.updateBlock(options, x, y, z+1);
+    		info.update(x, y, z);
+    		
+    		for (int i = 0; i < Options.updateOffsets.size(); i++)
+    		{
+    			Options.Offset offset = Options.updateOffsets.get(i);
+				updateBlock(player.worldObj, x + offset.x, y + offset.y, z + offset.z);
+    		}
     	}
 	}
 	
