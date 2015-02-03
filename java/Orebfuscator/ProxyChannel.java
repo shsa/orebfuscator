@@ -68,6 +68,7 @@ public class ProxyChannel implements Channel
 		return this.channel.close();
 	}
 
+	@SuppressWarnings( "deprecation" )
 	@Override
 	public ChannelFuture deregister() {
 		return this.channel.deregister();
