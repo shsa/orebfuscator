@@ -72,6 +72,19 @@ public class Fields
 		}
 	}
 	
+	public static void setValue(Object instance, Field field, Object value)
+	{
+		try 
+		{
+			field.setAccessible(true);
+			field.set(instance, value);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	public static class NetworkManager
 	{
 		public static String getOutboundPacketsQueueName()

@@ -1,6 +1,7 @@
 package Orebfuscator;
 
 import java.io.File;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -134,47 +135,52 @@ public class Options
 	    	if (world.provider instanceof WorldProviderSurface)
 	    	{
 	    		options.load(config, new String[] {
-		    			getID(Blocks.gold_ore, 1),
-		    			getID(Blocks.iron_ore, 1),
-		    			getID(Blocks.coal_ore, 1),
-		    			getID(Blocks.lapis_ore, 1),
-		    			getID(Blocks.diamond_ore, 1),
-		    			getID(Blocks.redstone_ore, 1),
-		    			getID(Blocks.emerald_ore, 1),
-		    			getID(Blocks.mossy_cobblestone, 1),
-		    			getID(Blocks.mob_spawner, 100),
+		    			getID(Blocks.air, 1),
+		    			getID(Blocks.gold_ore, 16),
+		    			getID(Blocks.iron_ore, 16),
+		    			getID(Blocks.coal_ore, 16),
+		    			getID(Blocks.lapis_ore, 16),
+		    			getID(Blocks.diamond_ore, 16),
+		    			getID(Blocks.redstone_ore, 16),
+		    			getID(Blocks.emerald_ore, 16),
+		    			getID(Blocks.mossy_cobblestone, 16),
+		    			getID(Blocks.mob_spawner, 1000),
 	    		});
 	    	}
 	    	if (world.provider instanceof WorldProviderHell)
 	    	{
 				options.load(config, new String[] {
-		    			getID(Blocks.glowstone, 1),
-		    			getID(Blocks.netherrack, 1),
-		    			getID(Blocks.nether_brick, 1),
-		    			getID(Blocks.nether_brick_fence, 1),
-		    			getID(Blocks.nether_brick_stairs, 1),
-		    			getID(Blocks.nether_wart, 1),
-		    			getID(Blocks.quartz_ore, 1),
+		    			getID(Blocks.air, 1),
+		    			getID(Blocks.glowstone, 16),
+		    			getID(Blocks.netherrack, 16),
+		    			getID(Blocks.nether_brick, 16),
+		    			getID(Blocks.nether_brick_fence, 16),
+		    			getID(Blocks.nether_brick_stairs, 16),
+		    			getID(Blocks.nether_wart, 16),
+		    			getID(Blocks.quartz_ore, 16),
+		    			getID(Blocks.mob_spawner, 1000),
 		    	});
 	    	}
 	    	else
 	    	if (world.provider instanceof WorldProviderEnd)
 	    	{
 				options.load(config, new String[] {
-		    			getID(Blocks.end_stone, 1),
+		    			getID(Blocks.air, 1),
+		    			getID(Blocks.end_stone, 16),
 		    	});
 	    	}
 	    	else
 	    	{
 	    		options.load(config, new String[] {
-		    			getID(Blocks.gold_ore, 1),
-		    			getID(Blocks.iron_ore, 1),
-		    			getID(Blocks.coal_ore, 1),
-		    			getID(Blocks.lapis_ore, 1),
-		    			getID(Blocks.diamond_ore, 1),
-		    			getID(Blocks.redstone_ore, 1),
-		    			getID(Blocks.emerald_ore, 1),
-		    			getID(Blocks.mossy_cobblestone, 1),
+		    			getID(Blocks.air, 1),
+		    			getID(Blocks.gold_ore, 16),
+		    			getID(Blocks.iron_ore, 16),
+		    			getID(Blocks.coal_ore, 16),
+		    			getID(Blocks.lapis_ore, 16),
+		    			getID(Blocks.diamond_ore, 16),
+		    			getID(Blocks.redstone_ore, 16),
+		    			getID(Blocks.emerald_ore, 16),
+		    			getID(Blocks.mossy_cobblestone, 16),
 		    			getID(Blocks.mob_spawner, 1000),
 	    		});
 	    	}
@@ -191,6 +197,8 @@ public class Options
 	
 	public static boolean[] transparentBlocks = new boolean[4096];
 	
+	public static boolean isBuildCraft = false; 
+	
 	public static class Offset
 	{
 		public int x;
@@ -206,6 +214,20 @@ public class Options
 	{
     	configFile = new File(modDir, Orebfuscator.MODID + ".cfg");
     	Configuration config = new Configuration(configFile, false);
+    	
+    	/*
+    	ClassLoader loader = (ClassLoader)Thread.currentThread().getContextClassLoader();
+    	try
+    	{
+    		loader.loadClass("org.bukkit.craftbukkit.CraftWorld");
+    		isBuildCraft = true;
+    	}
+    	catch (Exception e)
+    	{
+    		isBuildCraft = false;
+    	}
+    	isBuildCraft = config.getBoolean("isBuildCraft", "Options", isBuildCraft, "BuildCraft and Forge have different algorithms update chunks");
+    	*/
     	
     	int updateRadius = config.getInt("updateRadius", "Options", 2, 1, 5, "How much blocks update after block break");
     	for (int x = -updateRadius; x <= updateRadius; x++)

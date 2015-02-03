@@ -1,11 +1,14 @@
 package Orebfuscator;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.network.EnumConnectionState;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -23,7 +26,7 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 public class Orebfuscator
 {
     public static final String MODID = "Orebfuscator";
-    public static final String VERSION = "0.3";
+    public static final String VERSION = "0.4";
 
     @EventHandler
     public void init(FMLInitializationEvent event)
@@ -35,7 +38,7 @@ public class Orebfuscator
     {
     	FMLCommonHandler.instance().bus().register(this);
     	MinecraftForge.EVENT_BUS.register(new PlayerHandler());
-    	
+
     	Options.load(event.getModConfigurationDirectory());
     }
     

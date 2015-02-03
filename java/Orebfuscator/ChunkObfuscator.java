@@ -34,7 +34,7 @@ public class ChunkObfuscator
 	public int len;
 	public byte[] data;
 	
-	public void obfuscate(World world, int chunkX, int chunkZ, int sectionLSB, int sectionMSB, byte[] data)
+	public int obfuscate(World world, int chunkX, int chunkZ, boolean hasSky, int sectionLSB, int sectionMSB, byte[] data, int pos)
 	{
 		this.startX = chunkX << 4;
 		this.startZ = chunkZ << 4;
@@ -43,7 +43,6 @@ public class ChunkObfuscator
     	int countLSB = 0;
     	len = 0;
     	int l;
-    	int pos = 0;
     	int i;
         for (i = 0; i < 16; ++i)
         {
@@ -81,7 +80,8 @@ public class ChunkObfuscator
         }
        	
        	
-        if (!world.provider.hasNoSky)
+        //if (!world.provider.hasNoSky)
+        if (hasSky)
         {
         	// если есть небо, то в буфере будет массив ExtendedBlockStorage.skylightArray
         	pos += countLSB * 2048;
@@ -101,7 +101,9 @@ public class ChunkObfuscator
             }
         }
         
-        Options.worldOptions = Options.getWorldOptions(world);
+        // biome info
+        pos += 256;
+        
         for (i = 0; i < len; i++)
         {
             if (offsetsLSB[i] > -1)
@@ -122,6 +124,8 @@ public class ChunkObfuscator
             	}
             }
         }
+        
+        return pos;
 	}
 	
     /**

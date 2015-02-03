@@ -28,14 +28,14 @@ public class ProxyChannel implements Channel
 		this.player = player;
 	}
 
-	public void updateMsg(Object msg)
+	public Object updateMsg(Object msg)
 	{
 		if (msg instanceof S26PacketMapChunkBulk) 
 		{
 			S26PacketMapChunkBulk packet = (S26PacketMapChunkBulk)msg;
-			MapChunkBulkObfuscator.obfuscate(player.worldObj, packet);
-			return;
+			return MapChunkBulkObfuscator.obfuscate(player.worldObj, packet);
 		}
+		return msg;
 	}
 	
 	@Override
@@ -121,7 +121,7 @@ public class ProxyChannel implements Channel
 
 	@Override
 	public ChannelFuture writeAndFlush(Object msg) {
-		this.updateMsg(msg);
+		msg = this.updateMsg(msg);
 		return this.channel.writeAndFlush(msg);
 	}
 
